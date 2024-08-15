@@ -4,7 +4,7 @@ interface CoinInfo {
     val id: String
     val name: String
     val categories: List<String>
-    val description: String
+    val description: Description
     val image: Image
 }
 
