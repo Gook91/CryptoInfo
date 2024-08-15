@@ -65,6 +65,10 @@ dependencies {
     implementation(libs.google.hilt.core)
     kapt(libs.google.hilt.compiler)
 
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.google.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
