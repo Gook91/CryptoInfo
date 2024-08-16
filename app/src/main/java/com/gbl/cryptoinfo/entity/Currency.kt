@@ -1,6 +1,6 @@
 package com.gbl.cryptoinfo.entity
 
-enum class Currencies(val symbol: Char) {
+enum class Currency(val symbol: Char) {
     USD('$'),
     RUB('₽')
 }
