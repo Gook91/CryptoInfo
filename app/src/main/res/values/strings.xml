@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Crypto Info</string>
+
+    <string name="coin_list_screen_title">Список криптовалют</string>
+
+    <string name="first_load_error_message">Произошла какая-то ошибка :(\nПопробуем снова?</string>
+    <string name="try_reload_button">Попробовать</string>
+    <string name="toast_error_message">Произошла ошибка при загрузке</string>
+
+    <string name="price_template">%1$s %2$.2f</string>
+    <string name="price_change_template">%1$+.2f%%</string>
 </resources>
