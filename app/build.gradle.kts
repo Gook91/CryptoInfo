@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.kapt)
     alias(libs.plugins.google.hilt)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -64,6 +65,10 @@ dependencies {
 
     implementation(libs.google.hilt.core)
     kapt(libs.google.hilt.compiler)
+
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.hilt)
+    implementation(libs.jetbrains.kotlinx.serialization)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
