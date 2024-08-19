@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -35,6 +37,7 @@ import androidx.paging.compose.itemKey
 import com.gbl.cryptoinfo.R
 import com.gbl.cryptoinfo.entity.CoinWithMarketData
 import com.gbl.cryptoinfo.entity.Currency
+import com.gbl.cryptoinfo.ui.theme.CryptoInfoTheme
 import com.gbl.cryptoinfo.ui.views.ErrorMessageView
 import com.gbl.cryptoinfo.ui.views.LoadMessageView
 import kotlinx.coroutines.flow.flowOf
@@ -132,7 +135,8 @@ private fun FilterChips(
                 onClick = {
                     getCoinsByCurrency(currency)
                 },
-
+                // In Material guidelines containerColor by default is surfaceContainerLow. But in defaultFilterChipColors its value is hardcoded as Color.Transparent
+                colors = FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                 label = {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
@@ -206,9 +210,12 @@ private fun PreviewCoinListScreen() {
         }
     })
     val coinListUIState = CoinListUIState(Currency.entries, Currency.USD, previewPagingData)
-    CoinListScreen(
-        coinListUIState = coinListUIState,
-        getCoinsByCurrency = {},
-        onNavigateToCoinInfoScreen = {}
-    )
+
+    CryptoInfoTheme {
+        CoinListScreen(
+            coinListUIState = coinListUIState,
+            getCoinsByCurrency = {},
+            onNavigateToCoinInfoScreen = {}
+        )
+    }
 }
