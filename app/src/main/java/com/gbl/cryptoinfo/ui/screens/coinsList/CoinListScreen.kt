@@ -1,8 +1,6 @@
 package com.gbl.cryptoinfo.ui.screens.coinsList
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Scaffold
@@ -25,10 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +35,8 @@ import androidx.paging.compose.itemKey
 import com.gbl.cryptoinfo.R
 import com.gbl.cryptoinfo.entity.CoinWithMarketData
 import com.gbl.cryptoinfo.entity.Currency
+import com.gbl.cryptoinfo.ui.views.ErrorMessageView
+import com.gbl.cryptoinfo.ui.views.LoadMessageView
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -172,15 +168,15 @@ private fun CoinList(
         with(coinLazyPagingItems) {
             when {
                 loadState.refresh is LoadState.Loading -> item {
-                    LoadBox(modifier = Modifier.fillParentMaxSize())
+                    LoadMessageView(modifier = Modifier.fillParentMaxSize())
                 }
 
                 loadState.refresh is LoadState.Error -> item {
-                    ErrorBox(modifier = Modifier.fillParentMaxSize()) { retry() }
+                    ErrorMessageView(modifier = Modifier.fillParentMaxSize()) { retry() }
                 }
 
                 loadState.append is LoadState.Loading -> item {
-                    LoadBox(modifier = Modifier.fillParentMaxWidth())
+                    LoadMessageView(modifier = Modifier.fillParentMaxWidth())
                 }
 
                 loadState.append is LoadState.Error -> item {
@@ -195,39 +191,6 @@ private fun CoinList(
     }
 }
 
-@Composable
-private fun LoadBox(
-    modifier: Modifier
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-    ) { CircularProgressIndicator(color = Color(0xFFFF9F00)) }
-}
-
-@Composable
-private fun ErrorBox(
-    modifier: Modifier,
-    reloadList: () -> Unit
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(painter = painterResource(id = R.drawable.logo), contentDescription = null)
-        Text(
-            modifier = Modifier.padding(top = 13.dp, bottom = 30.dp),
-            text = stringResource(id = R.string.first_load_error_message)
-        )
-        Button(
-            onClick = reloadList,
-            shape = RoundedCornerShape(4.dp)
-        ) {
-            Text(text = stringResource(id = R.string.try_reload_button))
-        }
-    }
-}
 
 @Preview(showSystemUi = true)
 @Composable
