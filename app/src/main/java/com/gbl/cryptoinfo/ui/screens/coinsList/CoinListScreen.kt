@@ -1,6 +1,5 @@
 package com.gbl.cryptoinfo.ui.screens.coinsList
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,16 +14,18 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,8 +49,12 @@ fun CoinListScreen(
     getCoinsByCurrency: (Currency) -> Unit,
     onNavigateToCoinInfoScreen: (String) -> Unit
 ) {
+
+    val snackBarHostState = remember { SnackbarHostState() }
+
     Scaffold(
-        topBar = { CoinListTopBar() }
+        topBar = { CoinListTopBar() },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     ) { innerPaddings ->
         PullToRefreshBox(
             modifier = Modifier
@@ -69,7 +74,8 @@ fun CoinListScreen(
                 CoinList(
                     selectedCurrency = coinListUIState.selectedCurrency,
                     coinLazyPagingItems = coinLazyPagingItems,
-                    onNavigateToCoinInfoScreen = onNavigateToCoinInfoScreen
+                    onNavigateToCoinInfoScreen = onNavigateToCoinInfoScreen,
+                    snackBarHostState = snackBarHostState
                 )
             }
         }
@@ -152,46 +158,48 @@ private fun FilterChips(
 private fun CoinList(
     selectedCurrency: Currency,
     coinLazyPagingItems: LazyPagingItems<CoinWithMarketData>,
-    onNavigateToCoinInfoScreen: (String) -> Unit
+    onNavigateToCoinInfoScreen: (String) -> Unit,
+    snackBarHostState: SnackbarHostState
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(
-            coinLazyPagingItems.itemCount,
-            key = coinLazyPagingItems.itemKey { it.id }
-        ) { index ->
-            coinLazyPagingItems[index]?.let { coinWithMarketData ->
-                CoinListItem(
-                    coinWithMarketData = coinWithMarketData,
-                    currency = selectedCurrency,
-                    onItemClick = { onNavigateToCoinInfoScreen(coinWithMarketData.id) })
+    when (coinLazyPagingItems.loadState.refresh) {
+        LoadState.Loading ->
+            LoadMessageView(modifier = Modifier.fillMaxSize())
+
+        is LoadState.Error ->
+            ErrorMessageView(modifier = Modifier.fillMaxSize()) { coinLazyPagingItems.retry() }
+
+        is LoadState.NotLoading ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                items(
+                    coinLazyPagingItems.itemCount,
+                    key = coinLazyPagingItems.itemKey { it.id }
+                ) { index ->
+                    coinLazyPagingItems[index]?.let { coinWithMarketData ->
+                        CoinListItem(
+                            coinWithMarketData = coinWithMarketData,
+                            currency = selectedCurrency,
+                            onItemClick = { onNavigateToCoinInfoScreen(coinWithMarketData.id) })
+                    }
+                }
+                item {
+                    when (coinLazyPagingItems.loadState.append) {
+                        LoadState.Loading ->
+                            LoadMessageView(modifier = Modifier.fillParentMaxWidth())
+
+                        is LoadState.Error -> {
+                            val errorMessage = stringResource(id = R.string.toast_error_message)
+                            LaunchedEffect(key1 = snackBarHostState) {
+                                snackBarHostState.showSnackbar(errorMessage)
+                            }
+                        }
+
+                        is LoadState.NotLoading -> {}
+                    }
+                }
             }
-        }
-        with(coinLazyPagingItems) {
-            when {
-                loadState.refresh is LoadState.Loading -> item {
-                    LoadMessageView(modifier = Modifier.fillParentMaxSize())
-                }
-
-                loadState.refresh is LoadState.Error -> item {
-                    ErrorMessageView(modifier = Modifier.fillParentMaxSize()) { retry() }
-                }
-
-                loadState.append is LoadState.Loading -> item {
-                    LoadMessageView(modifier = Modifier.fillParentMaxWidth())
-                }
-
-                loadState.append is LoadState.Error -> item {
-                    Toast.makeText(
-                        LocalContext.current,
-                        stringResource(id = R.string.toast_error_message),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
     }
 }
 
