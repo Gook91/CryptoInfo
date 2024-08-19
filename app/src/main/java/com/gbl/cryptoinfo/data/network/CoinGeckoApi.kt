@@ -5,7 +5,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CoinGeckoApi {
-    @GET("/api/v3/coins/{id}")
+    @GET("/api/v3/coins/{id}?tickers=false&market_data=false&community_data=false&developer_data=false")
     suspend fun getCoinInfo(
         @Path("id") id: String
     ): CoinInfoDto
