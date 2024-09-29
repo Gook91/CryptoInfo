@@ -1,6 +1,5 @@
 package com.gbl.cryptoinfo.domain
 
-import com.gbl.cryptoinfo.data.Repository
 import com.gbl.cryptoinfo.entity.CoinInfo
 import javax.inject.Inject
 
