@@ -2,10 +2,7 @@ package com.gbl.cryptoinfo.ui.screens.coinsList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.gbl.cryptoinfo.domain.GetAllCurrenciesUseCase
 import com.gbl.cryptoinfo.domain.GetCoinsWithMarketDataUseCase
 import com.gbl.cryptoinfo.entity.Currency
@@ -42,17 +39,13 @@ class CoinListViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            Pager(
-                PagingConfig(pageSize = 100)
-            ) {
-                getCoinsWithMarketDataUseCase.execute(currency)
-            }.flow.cachedIn(viewModelScope).collect { newPagingData ->
-                _coinListUIState.update {
-                    it.copy(
-                        coinPagingData = newPagingData
-                    )
-                }
+            val newPagingData = getCoinsWithMarketDataUseCase.execute(currency)
+            _coinListUIState.update {
+                it.copy(
+                    coinPagingData = newPagingData
+                )
             }
+
         }
     }
 

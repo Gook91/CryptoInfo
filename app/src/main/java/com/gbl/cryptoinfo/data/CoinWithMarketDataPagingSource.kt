@@ -3,11 +3,12 @@ package com.gbl.cryptoinfo.data
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.gbl.cryptoinfo.data.network.CoinGeckoApi
 import com.gbl.cryptoinfo.entity.CoinWithMarketData
 import com.gbl.cryptoinfo.entity.Currency
 
 class CoinWithMarketDataPagingSource(
-    private val repository: Repository,
+    private val coinGeckoApi: CoinGeckoApi,
     private val currency: Currency
 ) : PagingSource<Int, CoinWithMarketData>() {
 
@@ -17,7 +18,7 @@ class CoinWithMarketDataPagingSource(
         val page = params.key ?: 1
 
         return try {
-            val responseList = repository.getCoinsWithMarketData(currency, page)
+            val responseList = coinGeckoApi.getCoinsWithMarketData(currency.name, page)
             val nextPage = if (responseList.isEmpty()) null else page + 1
             LoadResult.Page(responseList, null, nextPage)
 

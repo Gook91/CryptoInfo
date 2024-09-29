@@ -1,17 +1,14 @@
 package com.gbl.cryptoinfo.domain
 
-import com.gbl.cryptoinfo.data.CoinWithMarketDataPagingSource
+import androidx.paging.PagingData
 import com.gbl.cryptoinfo.data.Repository
+import com.gbl.cryptoinfo.entity.CoinWithMarketData
 import com.gbl.cryptoinfo.entity.Currency
 import javax.inject.Inject
 
 class GetCoinsWithMarketDataUseCase @Inject constructor(
     private val repository: Repository
 ) {
-    fun execute(currency: Currency): CoinWithMarketDataPagingSource {
-        val factory: (Currency) -> CoinWithMarketDataPagingSource = { factoryCurrency ->
-            CoinWithMarketDataPagingSource(repository, factoryCurrency)
-        }
-        return factory(currency)
-    }
+    suspend fun execute(currency: Currency): PagingData<CoinWithMarketData> =
+        repository.getCoinListPagingData(currency)
 }
